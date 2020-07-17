@@ -1,5 +1,7 @@
 # 手摸手教你从0到1搭建部署Go微服务
 
+本仓库配合 [手摸手教你从开发到部署(CI/CD)GO微服务系列](https://www.guaosi.com/2020/07/05/go-microservice-series-from-development-to-deployment-introduction-contents/) 食用最佳噢~
+
 从`原生搭建`、`容器搭建`、`Docker-Compose搭建`、`Kubernetes搭建`这四个过程，从0到1体验基于GO的微服务搭建部署的全过程。
 
 ## 涉及
@@ -8,7 +10,7 @@
 | :-----------: | :-----------------------: | :-------------: |
 |     语言      |          Golang           |     1.14.1      |
 | Web框架(网关) |            Gin            |     v1.6.3      |
-|   通讯格式    |         Protobuf          |     v1.4.1      |
+|   通讯格式    |         Protobuf          |     v3.12.1      |
 |  微服务框架   |         Go-micro          |     v2.9.0      |
 |   反向代理    |          Traefik          |     v2.2.1      |
 | 服务注册中心  |      Etcd/Kubernetes      | v3.3.8/v1.16.5  |
@@ -47,7 +49,7 @@
 docker run -d \
   -p 2379:2379 \
   -p 2380:2380 \
-  --name etcd01 \
+  --name etcd1 \
   quay.io/coreos/etcd:v3.3.8 \
   /usr/local/bin/etcd \
   --name s1 \
@@ -57,6 +59,9 @@ docker run -d \
 
 如果想在etcd容器中使用cli
 ```
+# 进入容器
+docker exec -it etcd1 sh
+
 # 设置docker中环境变量
 export ETCDCTL_API=3
 
@@ -116,10 +121,10 @@ curl -X POST -d "username=guaosi&password=guaosi" http://127.0.0.1:8091/account/
 ### etcd
 在`原生搭建`中使用的就是`etcd`的镜像创建的容器,这里可以跳过
 
-获取etcd在gomicro网络里的内网IP地址
+获取etcd在网络里的内网IP地址
 
 ```
-docker inspect a180e724510a --format "{{.NetworkSettings.IPAddress}}"
+docker inspect etcd1 --format "{{.NetworkSettings.IPAddress}}"
 ```
 
 ### account
@@ -149,7 +154,7 @@ curl -X POST -d "username=guaosi&password=guaosi" http://127.0.0.1:8091/account/
 ```
 如果返回 `{"code":0,"message":""}` 则证明成功。
 
-## Docker-Compose下搭建
+## Docker Compose下搭建
 
 ### 创建专属网络
 
